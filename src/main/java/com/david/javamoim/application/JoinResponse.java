@@ -1,6 +1,6 @@
 package com.david.javamoim.application;
 
-public record MemberJoinResponse(
+public record JoinResponse(
         Long uid
 ) {
 }

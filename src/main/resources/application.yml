@@ -4,7 +4,11 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-  batch.job.enabled: false
   h2:
     console:
       enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      format_sql: true

@@ -1,9 +1,7 @@
 package com.david.javamoim.api;
 
 import com.david.javamoim.application.JoinRequest;
-import com.david.javamoim.application.JoinResponse;
 import com.david.javamoim.application.MemberCommandService;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MemberRestController {
 
-    private static final String MEMBER_API_URL_PREFIX = "/members";
-    private static final String URL_SEPARATOR_CHAR = "/";
     private final MemberCommandService memberCommandService;
 
     @Autowired

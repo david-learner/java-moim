@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Length.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record MemberJoinRequest(
+public record JoinRequest(
         @NotNull
         @List({
                 @Length(min = 2, message = "이름은 2자이상이어야 합니다."),
