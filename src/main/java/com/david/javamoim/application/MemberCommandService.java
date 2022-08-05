@@ -1,6 +1,5 @@
 package com.david.javamoim.application;
 
-import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,7 @@ public class MemberCommandService {
         this.memberRepository = memberRepository;
     }
 
-    public Long join(MemberJoinRequest request) {
-        Member savedMember = memberRepository.save(request.toMember());
-        return savedMember.getUid();
+    public void join(JoinRequest request) {
+        memberRepository.save(request.toMember());
     }
 }

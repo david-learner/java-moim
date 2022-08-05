@@ -1,6 +1,7 @@
 package com.david.javamoim.domain;
 
 import java.time.LocalDate;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,8 +25,10 @@ public class Member {
     private LocalDate birthDate;
     @Enumerated(EnumType.STRING)
     private Sex sex;
+    @Column(unique = true)
     private String id;
     private String password;
+    @Column(unique = true)
     private String email;
     private String organization;
     private String allergicFoods;
@@ -75,11 +78,11 @@ public class Member {
                 .build();
     }
 
-    public Long getUid() {
-        return uid;
-    }
-
     public boolean isRole(Role role) {
         return this.role == role;
+    }
+
+    public boolean isValidPassword(String password) {
+        return this.password.equals(password);
     }
 }

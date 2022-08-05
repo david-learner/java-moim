@@ -1,7 +1,6 @@
 package com.david.javamoim.api;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.david.javamoim.domain.MemberRepository;
@@ -14,27 +13,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Transactional
 class MemberRestControllerIntegrationTest {
 
     private final MockMvc mockMvc;
     private final MemberRepository memberRepository;
-    private ObjectMapper om = new ObjectMapper();
+    private final ObjectMapper om;
 
     @Autowired
-    public MemberRestControllerIntegrationTest(MockMvc mockMvc, MemberRepository memberRepository) {
+    public MemberRestControllerIntegrationTest(MockMvc mockMvc, MemberRepository memberRepository,
+                                               ObjectMapper om) {
         this.mockMvc = mockMvc;
         this.memberRepository = memberRepository;
+        this.om = om;
     }
 
     @Test
     @DisplayName("모임 주최자로 회원가입을 한다")
-    void joinAsHost() throws Exception {
+    void join_as_host() throws Exception {
         Map<String, String> formData = new HashMap<>();
         formData.put("name", "david");
         formData.put("birthDate", "1950-06-25");
@@ -49,13 +51,12 @@ class MemberRestControllerIntegrationTest {
                         post("/api/join")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(om.writeValueAsString(formData)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists(HttpHeaders.LOCATION));
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("모임 참여자로 회원가입을 한다")
-    void joinAsGuest() throws Exception {
+    void join_as_guest() throws Exception {
         Map<String, String> formData = new HashMap<>();
         formData.put("name", "david");
         formData.put("birthDate", "1950-06-25");
@@ -72,7 +73,6 @@ class MemberRestControllerIntegrationTest {
                         post("/api/join")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(om.writeValueAsString(formData)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists(HttpHeaders.LOCATION));
+                .andExpect(status().isOk());
     }
 }
