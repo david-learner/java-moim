@@ -1,0 +1,17 @@
+POST http://localhost:8080/api/join
+Content-Type: application/json
+
+{
+ "name" : "david",
+ "birthDate" :  "1950-06-25",
+ "sex" : "MALE",
+ "id" :  "kr.seoul.david",
+ "password" : "Iamdavid12!@",
+ "email" :  "david@david.com",
+ "organization" : "david company",
+ "allergicFoods" :  "",
+ "selfIntroduction" : "",
+ "role" :  "HOST"
+}
+
+###
