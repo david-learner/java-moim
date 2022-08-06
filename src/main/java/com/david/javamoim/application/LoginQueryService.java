@@ -3,6 +3,7 @@ package com.david.javamoim.application;
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.MemberRepository;
 import com.david.javamoim.security.JwtTokenProvider;
+import com.david.javamoim.support.MemberAuthentication;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,6 @@ public class LoginQueryService {
         if (!foundMember.isValidPassword(request.password())) {
             throw new IllegalArgumentException(INVALID_PASSWORD_MESSAGE);
         }
-        return jwtTokenProvider.createToken(request.id());
+        return jwtTokenProvider.createToken(MemberAuthentication.MEMBER_ID_KEY, request.id());
     }
 }

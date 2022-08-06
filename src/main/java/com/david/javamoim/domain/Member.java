@@ -85,4 +85,23 @@ public class Member {
     public boolean isValidPassword(String password) {
         return this.password.equals(password);
     }
+
+    public void addHostRole(String organization) {
+        if (this.role == Role.GUEST) {
+            this.role = Role.ALL;
+            this.organization = organization;
+            return;
+        }
+        throw new IllegalStateException("이미 모임주최자 역할을 가지고 있습니다.");
+    }
+
+    public void addGuestRole(String allergicFoods, String selfIntroduction) {
+        if (this.role == Role.HOST) {
+            this.role = Role.ALL;
+            this.allergicFoods = allergicFoods;
+            this.selfIntroduction = selfIntroduction;
+            return;
+        }
+        throw new IllegalStateException("이미 모임참여자 역할을 가지고 있습니다.");
+    }
 }
