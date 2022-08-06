@@ -110,4 +110,33 @@ public class Member {
         }
         throw new IllegalStateException("이미 모임참여자 역할을 가지고 있습니다.");
     }
+
+    public void update(String name, LocalDate birthDate, Sex sex, String password, String email, String organization,
+                       String allergicFoods, String selfIntroduction, Role role) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (birthDate != null) {
+            this.birthDate = birthDate;
+        }
+        if (sex != null) {
+            this.sex = sex;
+        }
+        if (password != null) {
+            this.password = password;
+        }
+        if (email != null) {
+            this.email = email;
+        }
+        if (role != Role.GUEST && organization != null) {
+            this.organization = organization;
+            return;
+        }
+        if (role != Role.HOST && allergicFoods != null) {
+            this.allergicFoods = allergicFoods;
+        }
+        if (role != Role.HOST && selfIntroduction != null) {
+            this.selfIntroduction = selfIntroduction;
+        }
+    }
 }

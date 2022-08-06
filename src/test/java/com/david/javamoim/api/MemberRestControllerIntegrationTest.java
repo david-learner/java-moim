@@ -2,15 +2,16 @@ package com.david.javamoim.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.david.javamoim.application.member.dtos.JoinRequest;
 import com.david.javamoim.application.login.LoginQueryService;
 import com.david.javamoim.application.login.dtos.LoginRequest;
 import com.david.javamoim.application.member.MemberCommandService;
-import com.david.javamoim.application.member.MemberQueryService;
+import com.david.javamoim.application.member.dtos.JoinRequest;
 import com.david.javamoim.domain.Member;
+import com.david.javamoim.domain.MemberRepository;
 import com.david.javamoim.domain.Role;
 import com.david.javamoim.domain.Sex;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,21 +36,22 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberRestControllerIntegrationTest {
 
     private static final String TOKEN_TYPE_WITH_SEPARATOR = "Bearer ";
+    private static final String NOT_EXISTED_ID_MESSAGE = "존재하지 않는 아이디입니다.";
     private final MockMvc mockMvc;
     private final MemberCommandService memberCommandService;
-    private final MemberQueryService memberQueryService;
+    private final MemberRepository memberRepository;
     private final LoginQueryService loginQueryService;
     private final ObjectMapper om;
 
     @Autowired
     public MemberRestControllerIntegrationTest(MockMvc mockMvc,
                                                MemberCommandService memberCommandService,
-                                               MemberQueryService memberQueryService,
+                                               MemberRepository memberRepository,
                                                LoginQueryService loginQueryService,
                                                ObjectMapper om) {
         this.mockMvc = mockMvc;
         this.memberCommandService = memberCommandService;
-        this.memberQueryService = memberQueryService;
+        this.memberRepository = memberRepository;
         this.loginQueryService = loginQueryService;
         this.om = om;
     }
@@ -163,7 +165,6 @@ class MemberRestControllerIntegrationTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
         ApiResponse apiResponse = om.readValue(memberResponseAsString, ApiResponse.class);
         LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) apiResponse.getBody();
         Assertions.assertThat(response.get("organization")).isNotNull();
@@ -198,6 +199,30 @@ class MemberRestControllerIntegrationTest {
         Assertions.assertThat(response.get("selfIntroduction")).isNotEmpty();
         Assertions.assertThat(response.get("password")).isNull();
         Assertions.assertThat(response.get("organization")).isNull();
+    }
+
+    @Test
+    @DisplayName("모임주최자 역할만을 가진 사용자가 자신의 정보를 수정한다")
+    void member_who_has_only_host_role_changes_own_information() throws Exception {
+        String id = "kr.seoul.david";
+        String password = "Iamdavid12!@";
+        createMemberAsHost(id, password);
+        String accessToken = login(new LoginRequest(id, password));
+        String authorizationHeaderValue = TOKEN_TYPE_WITH_SEPARATOR + accessToken;
+        Map<String, String> requestBodyForHost = new HashMap<>();
+        String sourceOrganization = "sophie company";
+        requestBodyForHost.put("organization", sourceOrganization);
+        Member memberAsHost = findMember(id);
+
+        String urlForUpdatingMemberInformation = "/api/members/" + memberAsHost.getUid();
+        this.mockMvc.perform(
+                        patch(urlForUpdatingMemberInformation)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(om.writeValueAsString(requestBodyForHost))
+                                .header(HttpHeaders.AUTHORIZATION, authorizationHeaderValue))
+                .andExpect(status().isOk());
+        Member updatedMember = findMember(id);
+        assertThat(updatedMember.getOrganization()).isEqualTo(sourceOrganization);
     }
 
     private void createMemberAsHost(String id, String password) {
@@ -237,6 +262,8 @@ class MemberRestControllerIntegrationTest {
     }
 
     private Member findMember(String memberId) {
-        return memberQueryService.findMember(memberId);
+        return memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new IllegalArgumentException(NOT_EXISTED_ID_MESSAGE);
+        });
     }
 }
