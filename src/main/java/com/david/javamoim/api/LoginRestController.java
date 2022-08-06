@@ -1,8 +1,8 @@
 package com.david.javamoim.api;
 
-import com.david.javamoim.application.LoginQueryService;
-import com.david.javamoim.application.LoginRequest;
-import com.david.javamoim.application.LoginResponse;
+import com.david.javamoim.application.login.LoginQueryService;
+import com.david.javamoim.application.login.dtos.LoginRequest;
+import com.david.javamoim.application.login.dtos.LoginResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

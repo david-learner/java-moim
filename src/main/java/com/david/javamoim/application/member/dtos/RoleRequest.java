@@ -1,11 +1,11 @@
-package com.david.javamoim.application;
+package com.david.javamoim.application.member.dtos;
 
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.Role;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 public record RoleRequest(
-        @NotNull
+        @NotBlank
         Role role,
         String organization,
         String allergicFoods,

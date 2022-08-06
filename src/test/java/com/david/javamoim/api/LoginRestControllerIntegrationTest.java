@@ -3,10 +3,10 @@ package com.david.javamoim.api;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.david.javamoim.application.JoinRequest;
-import com.david.javamoim.application.LoginQueryService;
-import com.david.javamoim.application.LoginRequest;
-import com.david.javamoim.application.MemberCommandService;
+import com.david.javamoim.application.member.dtos.JoinRequest;
+import com.david.javamoim.application.login.LoginQueryService;
+import com.david.javamoim.application.login.dtos.LoginRequest;
+import com.david.javamoim.application.member.MemberCommandService;
 import com.david.javamoim.domain.Role;
 import com.david.javamoim.domain.Sex;
 import com.fasterxml.jackson.databind.ObjectMapper;

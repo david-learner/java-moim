@@ -1,5 +1,6 @@
-package com.david.javamoim.application;
+package com.david.javamoim.application.login;
 
+import com.david.javamoim.application.login.dtos.LoginRequest;
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.MemberRepository;
 import com.david.javamoim.security.JwtTokenProvider;

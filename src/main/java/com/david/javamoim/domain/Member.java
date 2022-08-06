@@ -11,10 +11,12 @@ import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 @Entity
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class Member {
 
     // 회원번호 - 시스템에서 자동으로 부여되는 고유번호
@@ -80,6 +82,10 @@ public class Member {
 
     public boolean isRole(Role role) {
         return this.role == role;
+    }
+
+    public boolean isUid(Long uid) {
+        return this.uid.equals(uid);
     }
 
     public boolean isValidPassword(String password) {

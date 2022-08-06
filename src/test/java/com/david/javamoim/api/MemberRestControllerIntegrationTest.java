@@ -1,20 +1,23 @@
 package com.david.javamoim.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.david.javamoim.application.JoinRequest;
-import com.david.javamoim.application.LoginQueryService;
-import com.david.javamoim.application.LoginRequest;
-import com.david.javamoim.application.MemberCommandService;
-import com.david.javamoim.application.MemberQueryService;
+import com.david.javamoim.application.member.dtos.JoinRequest;
+import com.david.javamoim.application.login.LoginQueryService;
+import com.david.javamoim.application.login.dtos.LoginRequest;
+import com.david.javamoim.application.member.MemberCommandService;
+import com.david.javamoim.application.member.MemberQueryService;
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.Role;
 import com.david.javamoim.domain.Sex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +143,61 @@ class MemberRestControllerIntegrationTest {
                 .andExpect(status().isOk());
         Member foundMember = findMember(id);
         assertThat(foundMember.isRole(Role.ALL)).isTrue();
+    }
+
+    @Test
+    @DisplayName("모임주최자 역할만을 가진 사용자가 자신의 정보를 조회한다")
+    void member_who_has_only_host_role_requests_own_information() throws Exception {
+        String id = "kr.seoul.david";
+        String password = "Iamdavid12!@";
+        createMemberAsHost(id, password);
+        String accessToken = login(new LoginRequest(id, password));
+        String authorizationHeaderValue = TOKEN_TYPE_WITH_SEPARATOR + accessToken;
+        Member memberAsHost = findMember(id);
+
+        String urlForMemberInformation = "/api/members/" + memberAsHost.getUid();
+        String memberResponseAsString = this.mockMvc.perform(
+                        get(urlForMemberInformation)
+                                .header(HttpHeaders.AUTHORIZATION, authorizationHeaderValue))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ApiResponse apiResponse = om.readValue(memberResponseAsString, ApiResponse.class);
+        LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) apiResponse.getBody();
+        Assertions.assertThat(response.get("organization")).isNotNull();
+        Assertions.assertThat(response.get("organization")).isNotEmpty();
+        Assertions.assertThat(response.get("password")).isNull();
+        Assertions.assertThat(response.get("allergicFoods")).isNull();
+    }
+
+    @Test
+    @DisplayName("모임참여자 역할만을 가진 사용자가 자신의 정보를 조회한다")
+    void member_who_has_only_guest_role_requests_own_information() throws Exception {
+        String id = "kr.seoul.david";
+        String password = "Iamdavid12!@";
+        createMemberAsGuest(id, password);
+        String accessToken = login(new LoginRequest(id, password));
+        String authorizationHeaderValue = TOKEN_TYPE_WITH_SEPARATOR + accessToken;
+        Member memberAsGuest = findMember(id);
+
+        String urlForMemberInformation = "/api/members/" + memberAsGuest.getUid();
+        String memberResponseAsString = this.mockMvc.perform(
+                        get(urlForMemberInformation)
+                                .header(HttpHeaders.AUTHORIZATION, authorizationHeaderValue))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ApiResponse apiResponse = om.readValue(memberResponseAsString, ApiResponse.class);
+        LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) apiResponse.getBody();
+        Assertions.assertThat(response.get("allergicFoods")).isNotNull();
+        Assertions.assertThat(response.get("allergicFoods")).isNotEmpty();
+        Assertions.assertThat(response.get("selfIntroduction")).isNotNull();
+        Assertions.assertThat(response.get("selfIntroduction")).isNotEmpty();
+        Assertions.assertThat(response.get("password")).isNull();
+        Assertions.assertThat(response.get("organization")).isNull();
     }
 
     private void createMemberAsHost(String id, String password) {

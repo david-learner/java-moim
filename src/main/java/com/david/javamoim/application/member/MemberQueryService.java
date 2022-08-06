@@ -1,4 +1,4 @@
-package com.david.javamoim.application;
+package com.david.javamoim.application.member;
 
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.MemberRepository;

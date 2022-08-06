@@ -1,5 +1,7 @@
-package com.david.javamoim.application;
+package com.david.javamoim.application.member;
 
+import com.david.javamoim.application.member.dtos.JoinRequest;
+import com.david.javamoim.application.member.dtos.RoleRequest;
 import com.david.javamoim.domain.Member;
 import com.david.javamoim.domain.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
